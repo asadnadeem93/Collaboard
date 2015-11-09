@@ -1,0 +1,71 @@
+﻿<Page TextElement.FontFamily="Ariel" TextElement.FontSize="11" x:Class="Collaboard.boardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+      xmlns:local="clr-namespace:Collaboard"
+      mc:Ignorable="d" 
+      d:DesignHeight="768" d:DesignWidth="1366"
+      Title="boardPage">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel x:Name="stackPanel" Grid.Column="1" Grid.Row="0" Cursor="Hand"  Orientation="Horizontal" Margin="0,0,-1302,0" Height="50" VerticalAlignment="Top" HorizontalAlignment="Left" Width="1303" Background="LightGray">
+            <Button x:Name="pencil" Width="50" Height="50"  >
+                    <Image x:Name="pencilImage" Source="pencil.png" MouseDown="pencilImage_MouseDown" ToolTip="Scribble"/>
+            </Button>
+            <Button x:Name="eraser" Width="50" Height="50">
+                <Image x:Name="eraserImage" Source="eraser.png" MouseDown="eraserImage_MouseDown" />
+            </Button>
+            <Button x:Name="line" Width="50" Height="50">
+                <Image x:Name="lineImage" Source="line.png" MouseDown="lineImage_MouseDown" ToolTip="Line"/>
+            </Button>
+            <Button x:Name="circle" Width="50" Height="50">
+                <Image x:Name="circleImage" Source="circle.png" MouseDown="circleImage_MouseDown" ToolTip="Circle"/>
+            </Button>
+            <Button x:Name="rectangle" Width="50" Height="50" MouseDown="rectangleImage_MouseDown" ToolTip="Rectangle">
+                <Image x:Name="rectangleImage" Source="rectangle.png" MouseDown="rectangleImage_MouseDown"/>
+            </Button>
+            <Button x:Name="textBox" Width="50" Height="50">
+                <Image x:Name="textBoxImage" Source="text.png" MouseDown="textBoxImage_MouseDown" ToolTip="Text/Annotation"/>
+            </Button>
+            <Button x:Name="move" Width="50" Height="50" >
+                <Image x:Name="moveImage" Source="move.png" MouseDown="moveImage_MouseDown" ToolTip="Select &amp; Move"/>
+            </Button>
+            <Button x:Name="delete" Width="50" Height="50" Visibility="Collapsed" >
+                <Image x:Name="deleteImage" Source="delete.png" MouseDown="deleteImage_MouseDown" ToolTip="Select &amp; Remove Shape/Stroke" />
+            </Button>
+            <Button x:Name="undo" Width="50" Height="50" >
+                <Image x:Name="undoImage" Source="undo.png" MouseDown="undoImage_MouseDown" ToolTip="Select &amp; Undo"/>
+            </Button>
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
+            <Label Height="25" Content="StrokeColor" Width="85" FontSize="13" FontWeight="Bold"/>
+            <xctk:ColorPicker x:Name="colorStroke" SelectedColor="Black" Height="20" Width="50" Background="Black" ToolTip="Selects color of the stroke"/>
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
+            <Label Height="25" Content="FillColor" Width="60" FontSize="13" FontWeight="Bold"/>
+            <xctk:ColorPicker  x:Name="colorFill" SelectedColor="Transparent" Height="20" Width="50" Background="Black" ToolTip="Select color to fill"/>
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
+            <Label Height="25" Content="StrokeSize" Width="75" FontSize="13" FontWeight="Bold"/>
+            <Slider Height="25" Width="50" x:Name="slider" Minimum="2" Maximum="15" ToolTip="Set stroke size"/>
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
+            <Button x:Name="save" Width="50" Height="50">
+                <Image x:Name="saveImage" Source="save.png" MouseDown="saveImage_MouseDown" ToolTip="Save as PNG"/>
+            </Button>
+        </StackPanel>
+        <Image Grid.Column="0" Grid.Row="0" Source="cbsmall.png" Stretch="Fill"  />
+        <Border Grid.Row="1" Grid.Column="0" BorderBrush="White" BorderThickness="2">
+            <InkCanvas x:Name="boardCanvas" HorizontalAlignment="Left" Height="708" Margin="10,10,-1310,0" VerticalAlignment="Top" Width="1362" RenderTransformOrigin="0.495,0.401" Grid.ColumnSpan="2" MouseDown="boardCanvas_MouseDown" MouseMove="boardCanvas_MouseMove" MouseUp="boardCanvas_MouseUp" Cursor="Cross">
+                <Ellipse Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="0" Stroke="Black" VerticalAlignment="Top" Width="0"/>
+            </InkCanvas>
+        </Border>
+    </Grid>
+</Page>

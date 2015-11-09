@@ -1,0 +1,15 @@
+﻿<Page x:Class="Collaboard.mainBoard"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Collaboard"
+      mc:Ignorable="d" 
+      d:DesignHeight="768" d:DesignWidth="1366"
+      Title="mainBoard">
+
+    <Grid MouseDown="Grid_MouseDown">
+        <Image x:Name="image1" HorizontalAlignment="Left" Height="267" Margin="522,246,0,0" VerticalAlignment="Top" Width="308" Source="cb.png"/>
+        
+    </Grid>
+</Page>
