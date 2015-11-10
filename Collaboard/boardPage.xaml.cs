@@ -43,14 +43,17 @@ namespace Collaboard
             InitializeComponent();
             tempTool = pencilImage.Name;
             boardCanvas.EditingMode = InkCanvasEditingMode.None;
+            if (boardCanvas.Children.Count == 0) { undo.Visibility = Visibility.Collapsed; }
         }
 
         private void pencilImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
             pencil.Background = Brushes.Tomato;
             
-            boardCanvas.EditingMode = InkCanvasEditingMode.InkAndGesture;
+            boardCanvas.EditingMode = InkCanvasEditingMode.None;
             delete.Visibility = Visibility.Collapsed;
+            deleteLabel.Visibility = Visibility.Collapsed;
+            myUpDownControl.Visibility = Visibility.Collapsed;
             newAtr.Color = (Color)colorStroke.SelectedColor;
             newAtr.Height = newAtr.Width = slider.Value;
             boardCanvas.DefaultDrawingAttributes = newAtr;
@@ -62,7 +65,8 @@ namespace Collaboard
         {
             eraser.Background = Brushes.Tomato;
             boardCanvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
-
+            deleteLabel.Visibility = Visibility.Collapsed;
+            myUpDownControl.Visibility = Visibility.Collapsed;
             tempTool = eraserImage.Name;
             pencil.Background = rectangle.Background = line.Background = save.Background = textBox.Background =  move.Background = circle.Background = Brushes.LightGray;
 
@@ -71,7 +75,9 @@ namespace Collaboard
         private void lineImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
             boardCanvas.EditingMode = InkCanvasEditingMode.None;
+            deleteLabel.Visibility = Visibility.Collapsed;
             delete.Visibility = Visibility.Collapsed;
+            myUpDownControl.Visibility = Visibility.Collapsed;
             line.Background = Brushes.Tomato;
             tempTool = lineImage.Name;
             eraser.Background = rectangle.Background = pencil.Background = save.Background = textBox.Background =  move.Background = circle.Background = Brushes.LightGray;
@@ -82,6 +88,8 @@ namespace Collaboard
         {
             boardCanvas.EditingMode = InkCanvasEditingMode.None;
             delete.Visibility = Visibility.Collapsed;
+            deleteLabel.Visibility = Visibility.Collapsed;
+            myUpDownControl.Visibility = Visibility.Collapsed;
             circle.Background = Brushes.Tomato;
             tempTool = circleImage.Name;
             eraser.Background = rectangle.Background = line.Background = save.Background = textBox.Background = move.Background = pencil.Background = Brushes.LightGray;
@@ -91,7 +99,9 @@ namespace Collaboard
         private void rectangleImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
             boardCanvas.EditingMode = InkCanvasEditingMode.None;
+            deleteLabel.Visibility = Visibility.Collapsed;
             delete.Visibility = Visibility.Collapsed;
+            myUpDownControl.Visibility = Visibility.Collapsed;
             rectangle.Background = Brushes.Tomato;
             tempTool = rectangleImage.Name;
             eraser.Background = pencil.Background = line.Background = save.Background = move.Background = textBox.Background = circle.Background = Brushes.LightGray;
@@ -102,6 +112,8 @@ namespace Collaboard
         {
             move.Background = Brushes.Tomato;
             delete.Visibility = Visibility.Visible;
+            deleteLabel.Visibility = Visibility.Visible;
+            myUpDownControl.Visibility = Visibility.Collapsed;
             boardCanvas.EditingMode = InkCanvasEditingMode.Select;
             tempTool = moveImage.Name;
             eraser.Background = rectangle.Background = line.Background = save.Background = pencil.Background = textBox.Background = circle.Background = Brushes.LightGray;
@@ -110,7 +122,10 @@ namespace Collaboard
 
         private void undoImage_MouseDown(object sender, MouseButtonEventArgs e) {
             int count =  boardCanvas.Children.Count;
+            deleteLabel.Visibility = Visibility.Collapsed;
             delete.Visibility = Visibility.Collapsed;
+            myUpDownControl.Visibility = Visibility.Collapsed;
+
 
             if (count >= 1)
             {
@@ -121,13 +136,14 @@ namespace Collaboard
         private void deleteImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
             KeyBinding k = new KeyBinding();
-            k.Key = Key.Delete;
-            
+            k.Key = Key.Delete;            
         }
 
         private void textBoxImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
             boardCanvas.EditingMode = InkCanvasEditingMode.None;
+            myUpDownControl.Visibility = Visibility.Visible;
+            deleteLabel.Visibility = Visibility.Collapsed;
             delete.Visibility = Visibility.Collapsed;
             textBox.Background = Brushes.Tomato;
             tempTool = textBoxImage.Name;
@@ -195,22 +211,41 @@ namespace Collaboard
                 tB = new TextBox();
             }
 
-            eP = new Point(0, 0);
+            //eP = new Point(0, 0);
 
         }
 
         private void boardCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            pressed = true;
             eP = e.GetPosition(boardCanvas);
-            if (tempTool == "rectangleImage" || tempTool == "circleImage")
-                inflateRect();
-            else if (tempTool == "lineImage")
+            if (pressed)
             {
-                eP = e.GetPosition(boardCanvas);
-            }
-            else if (tempTool == "textBoxImage") {
-                eP = e.GetPosition(boardCanvas);
+                if (tempTool == "rectangleImage" || tempTool == "circleImage")
+                {
+                    inflateRect();
+                    if (tempTool == "rectangleImage")
+                    {
+                        boardCanvas.Children.Remove(rect);
+                        drawRect();
+                    }
+                    if (tempTool == "circleImage")
+                    {
+                        boardCanvas.Children.Remove(ellipse);
+                        drawCircle();
+                    }
+                }
+
+                else if (tempTool == "lineImage")
+                {
+                    boardCanvas.Children.Remove(line_C);
+                    drawLine();
+                }
+
+                else if (tempTool == "textBoxImage")
+                {
+                    boardCanvas.Children.Remove(tB);
+                    drawTextBox();
+                }
             }
         }
 
@@ -236,107 +271,133 @@ namespace Collaboard
                         radiusX = sP.X - eP.X;
                         radiusY = eP.Y - sP.Y;
                     }
-            
         }
-       
-        private void boardCanvas_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-                pressed = false;
+
+        void drawRect() {
             Brush sb = (SolidColorBrush)(new BrushConverter().ConvertFrom(colorStroke.SelectedColorText));
             Brush fb = (SolidColorBrush)(new BrushConverter().ConvertFrom(colorFill.SelectedColorText));
+            rect = new Rectangle() { Width = radiusX, Height = radiusY, Stroke = sb, Fill = fb, StrokeThickness = slider.Value };
+
+            if (eP.X > sP.X && eP.Y > sP.Y)
+            {
+                InkCanvas.SetTop(rect, sP.Y);
+                InkCanvas.SetLeft(rect, sP.X);
+            }
+            else if (eP.X > sP.X && eP.Y < sP.Y)
+            {
+                InkCanvas.SetTop(rect, eP.Y);
+                InkCanvas.SetLeft(rect, sP.X);
+            }
+            else if (eP.X < sP.X && eP.Y < sP.Y)
+            {
+                InkCanvas.SetTop(rect, eP.Y);
+                InkCanvas.SetLeft(rect, eP.X);
+            }
+            else if (eP.X < sP.X && eP.Y > sP.Y)
+            {
+                InkCanvas.SetTop(rect, sP.Y);
+                InkCanvas.SetLeft(rect, eP.X);
+            }
+            boardCanvas.Children.Add(rect);
+        }
+
+        void drawCircle() {
+            Brush sb = (SolidColorBrush)(new BrushConverter().ConvertFrom(colorStroke.SelectedColorText));
+            Brush fb = (SolidColorBrush)(new BrushConverter().ConvertFrom(colorFill.SelectedColorText));
+            ellipse = new Ellipse() { Width = radiusX, Height = radiusY, Stroke = sb, Fill = fb, StrokeThickness = slider.Value };
+
+            if (eP.X > sP.X && eP.Y > sP.Y)
+            {
+                InkCanvas.SetTop(ellipse, sP.Y);
+                InkCanvas.SetLeft(ellipse, sP.X);
+            }
+            else if (eP.X > sP.X && eP.Y < sP.Y)
+            {
+                InkCanvas.SetTop(ellipse, eP.Y);
+                InkCanvas.SetLeft(ellipse, sP.X);
+            }
+            else if (eP.X < sP.X && eP.Y < sP.Y)
+            {
+                InkCanvas.SetTop(ellipse, eP.Y);
+                InkCanvas.SetLeft(ellipse, eP.X);
+            }
+            else if (eP.X < sP.X && eP.Y > sP.Y)
+            {
+                InkCanvas.SetTop(ellipse, sP.Y);
+                InkCanvas.SetLeft(ellipse, eP.X);
+            }
+
+            boardCanvas.Children.Add(ellipse);
+        }
+
+        void drawLine() {
+            Brush sb = (SolidColorBrush)(new BrushConverter().ConvertFrom(colorStroke.SelectedColorText));
+            Brush fb = (SolidColorBrush)(new BrushConverter().ConvertFrom(colorFill.SelectedColorText));
+            line_C = new Line() { Stroke = sb, StrokeThickness = slider.Value };
+            line_C.X1 = sP.X;
+            line_C.X2 = eP.X;
+            line_C.Y1 = sP.Y;
+            line_C.Y2 = eP.Y;
+
+            boardCanvas.Children.Add(line_C);
+        }
+
+        void drawTextBox() {
+            Brush sb = (SolidColorBrush)(new BrushConverter().ConvertFrom(colorStroke.SelectedColorText));
+            Brush fb = (SolidColorBrush)(new BrushConverter().ConvertFrom(colorFill.SelectedColorText));
+            tB = new TextBox() { Width = 50, Foreground = sb, FontSize =(int)myUpDownControl.Value, AcceptsReturn = true, TextWrapping = TextWrapping.Wrap };
+            tB.Focus();
+            if (eP.X > sP.X && eP.Y > sP.Y)
+            {
+                InkCanvas.SetTop(tB, sP.Y);
+                InkCanvas.SetLeft(tB, sP.X);
+            }
+            else if (eP.X > sP.X && eP.Y < sP.Y)
+            {
+                InkCanvas.SetTop(tB, eP.Y);
+                InkCanvas.SetLeft(tB, sP.X);
+            }
+            else if (eP.X < sP.X && eP.Y < sP.Y)
+            {
+                InkCanvas.SetTop(tB, eP.Y);
+                InkCanvas.SetLeft(tB, eP.X);
+            }
+            else if (eP.X < sP.X && eP.Y > sP.Y)
+            {
+                InkCanvas.SetTop(tB, sP.Y);
+                InkCanvas.SetLeft(tB, eP.X);
+            }
+            boardCanvas.Children.Add(tB);
+        }
+
+
+        private void boardCanvas_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            pressed = false;
             
-            if (tempTool == "rectangleImage")
-            {
-
-                rect = new Rectangle() { Width = radiusX, Height = radiusY, Stroke = sb, Fill = fb, StrokeThickness = slider.Value };
-
-                if (eP.X > sP.X && eP.Y > sP.Y)
+            if (sP != eP)
+            { 
+                if (tempTool == "lineImage")
                 {
-                    InkCanvas.SetTop(rect, sP.Y);
-                    InkCanvas.SetLeft(rect, sP.X);
+                    drawLine();
+                    sP = eP = new Point(0, 0);
                 }
-                else if (eP.X > sP.X && eP.Y < sP.Y)
+                else if (tempTool == "circleImage")
                 {
-                    InkCanvas.SetTop(rect, eP.Y);
-                    InkCanvas.SetLeft(rect, sP.X);
+                    drawCircle();
+                    sP = eP = new Point(0, 0);
                 }
-                else if (eP.X < sP.X && eP.Y < sP.Y)
+                else if (tempTool == "rectangleImage")
                 {
-                    InkCanvas.SetTop(rect, eP.Y);
-                    InkCanvas.SetLeft(rect, eP.X);
-                }
-                else if (eP.X < sP.X && eP.Y > sP.Y)
-                {
-                    InkCanvas.SetTop(rect, sP.Y);
-                    InkCanvas.SetLeft(rect, eP.X);
-                }
-                boardCanvas.Children.Add(rect);
-            }
-            else if (tempTool == "circleImage")
-            {
-                ellipse = new Ellipse() { Width = radiusX, Height = radiusY, Stroke = sb, Fill = fb, StrokeThickness = slider.Value };
-
-                if (eP.X > sP.X && eP.Y > sP.Y)
-                {
-                    InkCanvas.SetTop(ellipse, sP.Y);
-                    InkCanvas.SetLeft(ellipse, sP.X);
-                }
-                else if (eP.X > sP.X && eP.Y < sP.Y)
-                {
-                    InkCanvas.SetTop(ellipse, eP.Y);
-                    InkCanvas.SetLeft(ellipse, sP.X);
-                }
-                else if (eP.X < sP.X && eP.Y < sP.Y)
-                {
-                    InkCanvas.SetTop(ellipse, eP.Y);
-                    InkCanvas.SetLeft(ellipse, eP.X);
-                }
-                else if (eP.X < sP.X && eP.Y > sP.Y)
-                {
-                    InkCanvas.SetTop(ellipse, sP.Y);
-                    InkCanvas.SetLeft(ellipse, eP.X);
+                    drawRect();
+                    sP = eP = new Point(0, 0);
                 }
 
-                boardCanvas.Children.Add(ellipse);
-            }
-            else if (tempTool == "lineImage")
-            {
-                line_C = new Line() { Stroke = sb, StrokeThickness = slider.Value };
-                line_C.X1 = sP.X;
-                line_C.X2 = eP.X;
-                line_C.Y1 = sP.Y;
-                line_C.Y2 = eP.Y;
-
-                boardCanvas.Children.Add(line_C);
-            }
-
-            else if (tempTool == "textBoxImage") {
-                tB = new TextBox() {Width= 50, Foreground = sb, FontSize = 15, AcceptsReturn = true, TextWrapping = TextWrapping.Wrap};
-                tB.Focus();
-                if (eP.X > sP.X && eP.Y > sP.Y)
-                {
-                    InkCanvas.SetTop(tB, sP.Y);
-                    InkCanvas.SetLeft(tB, sP.X);
+                else if (tempTool == "textBoxImage") {
+                    drawTextBox();
+                    sP = eP = new Point(0, 0);
                 }
-                else if (eP.X > sP.X && eP.Y < sP.Y)
-                {
-                    InkCanvas.SetTop(tB, eP.Y);
-                    InkCanvas.SetLeft(tB, sP.X);
-                }
-                else if (eP.X < sP.X && eP.Y < sP.Y)
-                {
-                    InkCanvas.SetTop(tB, eP.Y);
-                    InkCanvas.SetLeft(tB, eP.X);
-                }
-                else if (eP.X < sP.X && eP.Y > sP.Y)
-                {
-                    InkCanvas.SetTop(tB, sP.Y);
-                    InkCanvas.SetLeft(tB, eP.X);
-                }
-                boardCanvas.Children.Add(tB);
-                
             }
         }
     }
-
-    }
+}

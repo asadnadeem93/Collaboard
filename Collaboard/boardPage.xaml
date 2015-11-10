@@ -37,6 +37,7 @@
             <Button x:Name="textBox" Width="50" Height="50">
                 <Image x:Name="textBoxImage" Source="text.png" MouseDown="textBoxImage_MouseDown" ToolTip="Text/Annotation"/>
             </Button>
+            <xctk:IntegerUpDown Name="myUpDownControl" DefaultValue="8" Minimum="8" Maximum="72" Visibility="Collapsed"/>
             <Button x:Name="move" Width="50" Height="50" >
                 <Image x:Name="moveImage" Source="move.png" MouseDown="moveImage_MouseDown" ToolTip="Select &amp; Move"/>
             </Button>
@@ -60,6 +61,7 @@
             <Button x:Name="save" Width="50" Height="50">
                 <Image x:Name="saveImage" Source="save.png" MouseDown="saveImage_MouseDown" ToolTip="Save as PNG"/>
             </Button>
+            <Label x:Name="deleteLabel" Width="100" Height="25" Content="Press &quot;Delete&quot; key to Delete" Foreground="Red" Visibility="Collapsed"/>
         </StackPanel>
         <Image Grid.Column="0" Grid.Row="0" Source="cbsmall.png" Stretch="Fill"  />
         <Border Grid.Row="1" Grid.Column="0" BorderBrush="White" BorderThickness="2">
