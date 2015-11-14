@@ -8,8 +8,9 @@
       d:DesignHeight="768" d:DesignWidth="1366"
       Title="mainBoard">
 
-    <Grid MouseDown="Grid_MouseDown">
+    <Grid Margin="0,1,0,-1">
         <Image x:Name="image1" HorizontalAlignment="Left" Height="267" Margin="522,246,0,0" VerticalAlignment="Top" Width="308" Source="cb.png"/>
-        
+        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="20" Margin="550,424,0,0" TextWrapping="Wrap" Text="Enter your name here" VerticalAlignment="Top" Width="264" FontFamily="Trebuchet MS" BorderBrush="#FF0084FF" GotFocus="textBox_GotFocus" KeyDown="textBox_KeyDown" Foreground="#FF0084FF" SelectionBrush="Black" TextAlignment="Center" FontWeight="Bold"/>
+
     </Grid>
 </Page>

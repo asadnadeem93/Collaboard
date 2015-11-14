@@ -20,15 +20,32 @@ namespace Collaboard
     /// </summary>
     public partial class mainBoard : Page
     {
+        
         public mainBoard()
         {
             InitializeComponent();
+            ShowsNavigationUI = false;
+        }
+        
+      
+
+        private void textBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            textBox.Text = "";
         }
 
-        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        private void textBox_KeyDown(object sender, KeyEventArgs e)
         {
-            boardPage p = new boardPage();
-            this.NavigationService.Navigate(p);
+            if (e.Key == Key.Enter)
+            {
+                boardPage p = new boardPage();
+                p.label2.Content = textBox.Text;
+                p.label2.HorizontalContentAlignment = HorizontalAlignment.Right;
+                this.NavigationService.Navigate(p);
+            }
+
         }
+
+        
     }
 }
